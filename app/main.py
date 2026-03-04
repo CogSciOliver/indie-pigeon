@@ -7,6 +7,17 @@ from .db import SessionLocal, init_db
 from .models import Order, DeliveryLog
 from .square_client import verify_square_signature, get_payment
 from .emailer import send_ebook_email
+import hmac, hashlib, time, urllib.parse
+
+def make_cf_download_url(key: str) -> str:
+    base = os.environ["DOWNLOAD_BASE_URL"].rstrip("/")  # e.g. https://ebooks.unschooldiscoveries.com/dl
+    secret = os.environ["DOWNLOAD_SECRET"]
+    exp = int(time.time()) + int(os.environ.get("LINK_EXPIRES_SECONDS", "86400"))  # default 24h
+
+    msg = f"{key}.{exp}".encode("utf-8")
+    sig = hmac.new(secret.encode("utf-8"), msg, hashlib.sha256).hexdigest()
+
+    return f"{base}?key={urllib.parse.quote(key)}&exp={exp}&sig={sig}"
 
 app = FastAPI()
 
@@ -18,16 +29,17 @@ def _startup():
 def health():
     return {"ok": True}
 
-@app.post("/webhooks/square")
+@app.post("/square/webhook")
 async def square_webhook(request: Request):
     raw = await request.body()
 
-    signature = request.headers.get("x-square-signature")
+    signature = request.headers.get("x-square-hmacsha256-signature")
+    if not signature:
+        raise HTTPException(status_code=400, detail="Missing Square signature")
     signature_key = os.environ["SQUARE_WEBHOOK_SIGNATURE_KEY"]
 
     # IMPORTANT: notification URL must exactly match what Square calls (scheme/host/path)
-    # On many platforms, you know this. If behind a proxy, set WEBHOOK_PUBLIC_URL.
-    notification_url = os.environ.get("WEBHOOK_PUBLIC_URL", str(request.url))
+    notification_url = os.environ["WEBHOOK_PUBLIC_URL"]
 
     if not verify_square_signature(signature, signature_key, notification_url, raw):
         raise HTTPException(status_code=401, detail="Invalid signature")
@@ -36,8 +48,8 @@ async def square_webhook(request: Request):
     event_id = event.get("event_id") or event.get("id")  # Square naming can vary by tooling
     event_type = event.get("type", "")
 
-    # We only fulfill on successful payment events.
-    # If your Square account emits different types, we’ll whitelist the right one(s) after you see a sample payload.
+    # Only fulfill on successful payment events.
+    # If Square account emits different types, whitelist the right one(s) after a sample payload.
     if "payment" not in event_type.lower():
         return {"ignored": True}
 
@@ -77,13 +89,19 @@ async def square_webhook(request: Request):
     finally:
         db.close()
 
-    # Fulfill: email the ebook
-    attachment_path = os.environ["PRODUCT_FILE_PATH"]
-    subject = "Your ebook download"
-    body = "Thanks for your purchase! Your ebook is attached.\n\nIf you have any trouble, reply to this email."
+    # Fulfill: Email Message with ebook link
+    product_key = os.environ.get("PRODUCT_KEY", "usd-ebook-one.pdf")
+    # **WHY ONLY ONE LINK? This is a single-product store. For multiple products, I'd look up the product_key based on order details.** !IMPORTANT: product_key should not be user input or guessable to prevent abuse.
+    
+    
+    download_url = make_cf_download_url(product_key)
+    
+    subject = "Your Unschool Discoveries ebook download is here!"
+    body = f"""Thanks for your purchase! Your can download your ebook using the link below.\n\nIf you have any trouble, reply to this email.\n\nDownload link: {download_url}"""
+
     db = SessionLocal()
     try:
-        provider_id = send_ebook_email(buyer_email, subject, body, attachment_path)
+        provider_id = send_ebook_email(buyer_email, subject, body, attachment_path=None)
 
         # mark fulfilled + log
         order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
@@ -91,6 +109,7 @@ async def square_webhook(request: Request):
         order.fulfilled_at = datetime.utcnow()
         db.add(DeliveryLog(order_id=order.id, email_status="sent", provider_message_id=provider_id))
         db.commit()
+
     except Exception as e:
         db.rollback()
         # mark failed

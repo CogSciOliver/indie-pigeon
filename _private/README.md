@@ -34,8 +34,21 @@
 - Pro: $59–$99/mo, lower fee, affiliates + licensing
 - Enterprise: custom, SSO, SLAs, advanced tax/VAT
 
-## Prototype Scope
-- Get download setup in R2 with cloudflare 
-- Prove auto download link works 
-- Get Signed URL 
-- Setup Square webhook 
+## Prototype Flow
+```
+Customer pays → Square sends webhook
+                ↓
+Python backend verifies signature
+                ↓
+Backend confirms payment via Square API
+                ↓
+Backend generates signed Cloudflare link
+                ↓
+Email sent to customer
+                ↓
+Customer clicks link
+                ↓
+Cloudflare Worker verifies signature
+                ↓
+R2 sends ebook
+```
