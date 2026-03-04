@@ -1,0 +1,114 @@
+Deploy notes (so it doesn’t break in production)
+
+You must set WEBHOOK_PUBLIC_URL to the exact public URL Square hits, e.g.
+https://your-domain.com/webhooks/square
+Signature validation depends on it.
+
+Put your ebook in server storage (for now) and set PRODUCT_FILE_PATH.
+
+Add basic spam safety:
+
+send from a domain email (not a random free mailbox)
+
+include your physical mailing address later if you do marketing mail
+
+What you do next (no extra decisions needed)
+
+Create a GitHub repo with the files above
+
+Deploy to your preferred host
+
+In Square dashboard: add webhook subscription to your public URL
+
+Make a $1 test purchase in Square Sandbox
+
+Confirm you receive the email + that duplicates don’t resend
+
+Next upgrade immediately after first successful email
+
+Swap attachment → expiring download link (more reliable delivery)
+
+Add a tiny /admin/orders endpoint (token-protected) so you can resend manually
+
+Add product mapping (if you sell multiple ebooks)
+
+If you tell me what you’re deploying on (Render / Railway / Fly / VPS / AWS), I’ll give you the exact config (Procfile / Dockerfile / env setup) for that platform.
+
+Github & Vercel or just Gitbhub
+
+For this Square-webhook + email backend, Vercel is usually the wrong fit. Use GitHub for code, and deploy the API on a backend host that supports long-running web processes + stable webhooks.
+
+Why not Vercel (most of the time)
+
+Vercel’s sweet spot is frontend + serverless functions.
+
+Webhooks can work, but you’ll run into “serverless-y” constraints (cold starts, timeouts, networking quirks, background work).
+
+You also need a DB (even SQLite) and reliable idempotency; serverless + local disk is fragile.
+
+What I recommend for v0
+
+GitHub: repo + CI
+
+Deploy backend to one of these (pick 1):
+
+Render (simple, great for FastAPI)
+
+Railway (very fast setup)
+
+Fly.io (a bit more ops-y but solid)
+
+Hetzner/DigitalOcean VPS (most control)
+
+If you still want Vercel:
+
+Put frontend on Vercel later (your standalone shop UI)
+
+Keep webhook + fulfillment API on Render/Railway/Fly/VPS
+
+Best “keep it simple” stack for you right now
+
+Backend API: FastAPI on Render
+
+DB: Postgres (managed by Render) or SQLite for absolute prototype (Postgres is safer)
+
+Email: SMTP or Postmark
+
+Code: GitHub
+
+If you insist on “GitHub only”
+
+That means no hosting, so:
+
+you can’t receive Square webhooks
+
+you can’t send emails automatically
+
+So GitHub-only works only if you’re not running the prototype yet (or you run it locally and use something like ngrok for temporary webhook testing).
+
+A concrete recommendation
+
+Do this:
+
+Repo in GitHub
+
+Deploy FastAPI to Render
+
+Later: Vercel for the storefront UI (if you want)
+
+Minimal deployment files (so you can actually ship)
+
+If you deploy to Render, add:
+
+requirements.txt
+
+fastapi
+uvicorn[standard]
+sqlalchemy
+requests
+
+Start command
+
+uvicorn app.main:app --host 0.0.0.0 --port 10000
+
+If you tell me which backend host you want (Render vs Railway vs Fly), I’ll give you the exact step-by-step settings and the env vars to paste in, plus how to set WEBHOOK_PUBLIC_URL correctly so Square signature verification passes.
