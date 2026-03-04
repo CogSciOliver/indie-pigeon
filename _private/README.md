@@ -1,3 +1,9 @@
+# Software Needs:
+```
+pip install -r requirements.txt
+```
+- should have all imports needed listed
+
 # Platform Needs:
 
 1.  **Product catalog**
