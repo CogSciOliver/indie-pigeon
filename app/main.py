@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from fastapi import FastAPI, Request, HTTPException
+from httpcore import request
 from sqlalchemy.exc import IntegrityError
 
 from .db import SessionLocal, init_db
@@ -40,6 +41,9 @@ async def square_webhook(request: Request):
 
     # IMPORTANT: notification URL must exactly match what Square calls (scheme/host/path)
     notification_url = os.environ["WEBHOOK_PUBLIC_URL"]
+
+    print("Incoming URL:", str(request.url))
+    print("Expected URL:", os.environ["WEBHOOK_PUBLIC_URL"])
 
     if not verify_square_signature(signature, signature_key, notification_url, raw):
         raise HTTPException(status_code=401, detail="Invalid signature")

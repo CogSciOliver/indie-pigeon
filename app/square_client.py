@@ -5,9 +5,16 @@ def square_base_url():
     return "https://connect.squareup.com" if os.getenv("SQUARE_ENV","sandbox") == "production" else "https://connect.squareupsandbox.com"
 
 def verify_square_signature(signature_header: str, signature_key: str, notification_url: str, raw_body: bytes) -> bool:
-    # Square signature is base64(hmac_sha1(key, url + body))
-    mac = hmac.new(signature_key.encode("utf-8"), (notification_url.encode("utf-8") + raw_body), hashlib.sha1)
+    message = notification_url.encode("utf-8") + raw_body
+
+    mac = hmac.new(
+        signature_key.encode("utf-8"),
+        message,
+        hashlib.sha256   # ← this is the critical fix
+    )
+
     expected = base64.b64encode(mac.digest()).decode("utf-8")
+
     return hmac.compare_digest(expected, signature_header or "")
 
 def get_payment(payment_id: str) -> dict:
