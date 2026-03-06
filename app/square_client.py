@@ -10,7 +10,7 @@ def verify_square_signature(signature_header: str, signature_key: str, notificat
     mac = hmac.new(
         signature_key.encode("utf-8"),
         message,
-        hashlib.sha256   # ← this is the critical fix
+        hashlib.sha256
     )
 
     expected = base64.b64encode(mac.digest()).decode("utf-8")
