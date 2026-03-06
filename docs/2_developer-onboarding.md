@@ -43,6 +43,20 @@ cp .env.example .env
 Edit `.env` and fill in required values.
 > https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/4_cookbook-webhook-setup.md
 
+### Open VS Code Settings:
+- Go to the File menu (on Windows/Linux) or Code menu (on macOS) and select Preferences > Settings.
+- Alternatively, you can open settings using the Command Palette by pressing Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (macOS) and typing "Open Settings".
+### Navigate to Python Extension Settings:
+- In the search bar at the top of the Settings tab, type python.terminal.useEnvFile.
+### Enable the Setting:
+- Check the box next to the setting Python > Terminal: Use Env File.
+### Verify the .env file path (Optional):
+- The extension looks for a .env file by default in your workspace root. If your file is located elsewhere, you can specify its path using the python.envFile setting.
+### Restart the Terminal:
+- Close and reopen any existing terminals in VS Code for the changes to take effect. 
+
+After these steps, environment variables defined in your .env file will be automatically injected into new terminals you open within VS Code.
+
 ---
 
 # 5. Run the Backend
