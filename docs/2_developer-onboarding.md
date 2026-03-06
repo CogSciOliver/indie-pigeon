@@ -41,6 +41,7 @@ cp .env.example .env
 ```
 
 Edit `.env` and fill in required values.
+> https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/3_cookbook-webhook-setup.md
 
 ---
 
