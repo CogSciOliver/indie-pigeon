@@ -5,6 +5,8 @@ This guide helps a developer set up the Indie Pigeon system locally.
 Estimated setup time: **10–25 minutes** **maybe days if you need to review docs or AI sucks**
 
 ## Helpful Jumps:
+
+[Developer Onboarding Guide](#developer-onboarding-guide)
 - [Developer Onboarding Guide](#developer-onboarding-guide)
   - [Helpful Jumps:](#helpful-jumps)
 - [1. Clone the Repository](#1-clone-the-repository)
@@ -29,14 +31,6 @@ Estimated setup time: **10–25 minutes** **maybe days if you need to review doc
     - [Download link invalid](#download-link-invalid)
 - [Development Workflow](#development-workflow)
 - [Next Steps for Developers](#next-steps-for-developers)
-
-1. Clone the Repository : [Review Clone the Repository](#1-clone-the-repository)
-
-2. Create Virtual Environment : [Review Virtual Environment](#2-create-virtual-environment)
-3. Ins
-
-4. Create Environment File : [Review Environment File](#4-create-environment-file)
-
 
 ---
 
