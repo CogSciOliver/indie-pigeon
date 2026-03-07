@@ -4,9 +4,11 @@ This guide helps a developer set up the Indie Pigeon system locally.
 
 Estimated setup time: **10–25 minutes** **maybe days if you need to review docs or AI sucks**
 
-Helpful Jumps:
-[Clone the Repository](#1-clone-the-repository)
-[4 Create Environment File](#4-create-environment-file)
+## Helpful Jumps:
+
+Clone the Repository : [1. Clone the Repository](#1-clone-the-repository)
+Create Virtual Environment : [2. Create Virtual Environment](#2-create-virtual-environment)
+Create Environment File : [4. Create Environment File](#4-create-environment-file)
 
 
 ---
