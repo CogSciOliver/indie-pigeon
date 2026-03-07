@@ -98,7 +98,9 @@ ingress:
 
 Then SAVE by pressing:
 > CTRL + O (o not zero)
+
 > Enter Key
+
 > CTRL + X
 
 ## 6) Start your app

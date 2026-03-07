@@ -95,10 +95,30 @@ Select required tunnel api name:
 cloudflared tunnel run indie-pigeon-api
 ```
 
-Verify:
+## Start The App
+**This step REQUIRES the 2 terminal workflow**
+
+`Terminal 1:`
+bash
 ```
-https://api.unschooldiscoveries.com/health
+cd ~/WorkingCode/indie-pigeon
+source venv/bin/activate
+python -m uvicorn app.main:app --reload --port 8000
 ```
+
+`Terminal 2:`
+**Leave it running.**
+bash
+```
+cloudflared tunnel run indie-pigeon-api
+```
+
+## Verify It: Try the Tunnel 
+Open:
+> https://api.unschooldiscoveries.com/health
+
+Expected:
+> {"ok": true}
 
 ---
 
