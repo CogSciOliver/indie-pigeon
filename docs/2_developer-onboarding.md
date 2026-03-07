@@ -2,7 +2,11 @@
 
 This guide helps a developer set up the Indie Pigeon system locally.
 
-Estimated setup time: **10–15 minutes**
+Estimated setup time: **10–25 minutes** **maybe days if you need to review docs or AI sucks**
+
+Helpful Jumps:
+[Clone the Repository](#clone-the-repository)
+
 
 ---
 
