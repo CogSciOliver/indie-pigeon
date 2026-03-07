@@ -126,3 +126,29 @@ Open:
 Expected:
 > {"ok": true}
 
+--- 
+Stack right now is correctly wired like this:
+```
+Internet
+   │
+   ▼
+api.unschooldiscoveries.com
+   │
+Cloudflare Edge
+   │
+Cloudflare Tunnel (cloudflared)
+   │
+localhost:8000
+   │
+FastAPI
+   │
+/health endpoint
+```
+
+The {"ok": true} response confirms all of these are functioning:
+- DNS
+- Cloudflare Tunnel
+- config.yml
+- tunnel credentials
+- FastAPI server
+- ingress routing

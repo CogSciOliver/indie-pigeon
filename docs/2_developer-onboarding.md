@@ -41,7 +41,7 @@ cp .env.example .env
 ```
 
 Edit `.env` and fill in required values.
-> https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/4_cookbook-webhook-setup.md
+[How To Setup .ENV Secrets](https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/4_cookbook-webhook-setup.md)
 
 ### Open VS Code Settings:
 - Go to the File menu (on Windows/Linux) or Code menu (on macOS) and select Preferences > Settings.
