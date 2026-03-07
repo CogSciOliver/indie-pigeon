@@ -5,11 +5,35 @@ This guide helps a developer set up the Indie Pigeon system locally.
 Estimated setup time: **10–25 minutes** **maybe days if you need to review docs or AI sucks**
 
 ## Helpful Jumps:
+- [Developer Onboarding Guide](#developer-onboarding-guide)
+  - [Helpful Jumps:](#helpful-jumps)
+- [1. Clone the Repository](#1-clone-the-repository)
+- [2. Create Virtual Environment](#2-create-virtual-environment)
+- [3. Install Dependencies](#3-install-dependencies)
+- [4. Create Environment File](#4-create-environment-file)
+    - [Open VS Code Settings:](#open-vs-code-settings)
+    - [Navigate to Python Extension Settings:](#navigate-to-python-extension-settings)
+    - [Enable the Setting:](#enable-the-setting)
+    - [Verify the .env file path (Optional):](#verify-the-env-file-path-optional)
+    - [Restart the Terminal:](#restart-the-terminal)
+- [5. Run the Backend](#5-run-the-backend)
+- [6. Create/Start Cloudflare Tunnel](#6-createstart-cloudflare-tunnel)
+  - [Start The App](#start-the-app)
+  - [Verify It: Try the Tunnel](#verify-it-try-the-tunnel)
+- [7. Test Square Webhook](#7-test-square-webhook)
+- [8. Test Payment](#8-test-payment)
+- [9. Test Download Worker](#9-test-download-worker)
+- [10. Common Issues](#10-common-issues)
+    - [Webhook signature failure](#webhook-signature-failure)
+    - [Email not sending](#email-not-sending)
+    - [Download link invalid](#download-link-invalid)
+- [Development Workflow](#development-workflow)
+- [Next Steps for Developers](#next-steps-for-developers)
 
 1. Clone the Repository : [Review Clone the Repository](#1-clone-the-repository)
 
 2. Create Virtual Environment : [Review Virtual Environment](#2-create-virtual-environment)
-3. 
+3. Ins
 
 4. Create Environment File : [Review Environment File](#4-create-environment-file)
 
