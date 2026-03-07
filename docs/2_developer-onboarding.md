@@ -152,6 +152,8 @@ Expected:
 
 # 7. Test Square Webhook
 
+How To Setup and Connect to Square Webhooks [Square Webhook](https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/4_cookbook-webhook-setup.md)
+
 Square Developer Dashboard → Webhooks
 
 Send test event:
@@ -165,6 +167,7 @@ Confirm backend receives request.
 ---
 
 # 8. Test Payment
+How To Run Test Triggers [Square Sandbox](https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/5_cookbook-webhook-test-options.md)
 
 Create sandbox payment using:
 
