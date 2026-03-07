@@ -79,16 +79,23 @@ Expected response:
 
 ---
 
-# 6. Start Cloudflare Tunnel
+# 6. Create/Start Cloudflare Tunnel
 
-How To Create [Stable Named Path for CloudFlared](https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/2.6_cloudflared.md)
+How To Setup API URL & Create Tunnel [Stable Named Path for CloudFlared](https://github.com/CogSciOliver/indie-pigeon/blob/main/docs/3_cookbook-api-tunnel-setup.md)
 
+Once Created verify it exists and connect
+
+Run:
+```
+cloudflared tunnel list
+```
+
+Select required tunnel api name:
 ```
 cloudflared tunnel run indie-pigeon-api
 ```
 
 Verify:
-
 ```
 https://api.unschooldiscoveries.com/health
 ```
