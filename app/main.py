@@ -95,13 +95,15 @@ async def square_webhook(request: Request):
 
     # Fulfill: Email Message with ebook link
     product_key = os.environ.get("PRODUCT_KEY", "usd-ebook-one.pdf")
-    # **WHY ONLY ONE LINK? This is a single-product store. For multiple products, I'd look up the product_key based on order details.** !IMPORTANT: product_key should not be user input or guessable to prevent abuse.
-    
-    
     download_url = make_cf_download_url(product_key)
-    
+
     subject = "Your Unschool Discoveries ebook download is here!"
-    body = f"""Thanks for your purchase! Your can download your ebook using the link below.\n\nIf you have any trouble, reply to this email.\n\nDownload link: {download_url}"""
+    body = f"""Thanks for your purchase! You can download your ebook using the link below.
+
+    If you have any trouble, reply to this email.
+
+    Download link: {download_url}
+    """
 
     db = SessionLocal()
     try:
@@ -113,10 +115,8 @@ async def square_webhook(request: Request):
         order.fulfilled_at = datetime.utcnow()
         db.add(DeliveryLog(order_id=order.id, email_status="sent", provider_message_id=provider_id))
         db.commit()
-
     except Exception as e:
         db.rollback()
-        # mark failed
         order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
         if order:
             order.status = "failed"

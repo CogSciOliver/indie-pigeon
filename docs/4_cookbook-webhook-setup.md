@@ -36,6 +36,52 @@ SMTP_USER=you@gmail.com
 SMTP_PASS=your_app_password
 FROM_EMAIL=Unschool Discoveries <you@gmail.com>
 ```
+---
+```
+Step-by-Step Setup
+1️⃣ Turn on 2-Step Verification
+
+Go to:
+
+https://myaccount.google.com/security
+
+Enable:
+
+2-Step Verification
+
+This is required before Google allows app passwords.
+
+2️⃣ Generate an App Password
+
+Go to:
+
+https://myaccount.google.com/apppasswords
+
+Select:
+
+App: Mail
+Device: Other → Indie Pigeon
+
+Google will generate something like:
+
+abcd efgh ijkl mnop
+3️⃣ Use that in your .env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=yourgmail@gmail.com
+SMTP_PASS=abcdefghijklmnop
+FROM_EMAIL=Unschool Discoveries <yourgmail@gmail.com>
+
+Important:
+
+remove the spaces from the app password if present.
+
+Example:
+
+abcdefghijklmnop
+```
+---
+
 
 + Now create .gitignore (or edit it) to include:
 
@@ -164,10 +210,10 @@ be sure the terminal states
 Square Developer Dashboard → Webhooks (Sandbox) → your endpoint → Send Test
 
 Expected:
-- Square shows success (200)
-- Your API logs show POST /square/webhook
+- Square shows Code (500)
+- Your API logs show POST /square/webhook error (don't worry)
 
-If it errors, with a stable URL and we debug once.
+If it errors, with a stable URL move on to a real payment
 
 ## Test 2: Real payment triggers email
 
@@ -190,7 +236,7 @@ Expected:
 To consider sandbox testing to be “done”:
 
 > ✅ https://api.unschooldiscoveries.com/health returns {"ok": true}
-> ✅ Square sandbox webhook test returns 200
+> ✅ Square sandbox webhook test returns 500 Error
 > ✅ A real sandbox payment results in:
 > - webhook processed (not duplicate)
 > -order saved
@@ -206,23 +252,3 @@ To consider sandbox testing to be “done”:
 
 > The “public-facing” webhooks is:
 > api.unschooldiscoveries.com (Tunnel → localhost)
-
---- 
-
-Next move (no more drifting)
-
-Do you want to use the stable tunnel setup right now? 
-# Yes
-
-If yes, run these in order and paste the outputs only where it doesn’t reveal secrets:
-
-cloudflared tunnel login (just tell me it succeeded)
-# 
-
-cloudflared tunnel create indie-pigeon-api (paste the tunnel id line, not keys)
-# 
-
-cloudflared tunnel route dns indie-pigeon-api 
-> api.unschooldiscoveries.com
-
-Once that’s done, your “random link problem” disappears permanently.

@@ -1,23 +1,45 @@
-# How to Trigger a Real `payment.updated` / `payment.created` Webhook in Square Sandbox
+# How to Trigger a Real Payment Event
+`payment.updated` / `payment.created` Webhook in Square Sandbox
 
 There are **three practical ways** to trigger a real `payment.updated` / `payment.created` webhook in Square Sandbox. Only one of them needs a checkout page.
 
 The goal is simply: **create a real payment object in Square Sandbox** so the webhook fires and your app processes it.
 
-## Here are the options:
 
----
-
-## Option 1 — Square Payment Link (Easiest / No Code)
-
-This is usually the fastest.
+## Square Payment Link (Easiest / No Code)
 
 ### Step 1
 
 Go to **Square Dashboard (Sandbox)**
-[https://squareupsandbox.com](https://squareupsandbox.com)
+[Square Developer Explorer ](https://developer.squareup.com/explorer/square_2026-01-22/payments-api/create-payment)
 
-### Step 2
+54.212.177.79:0 - "POST /square/webhook HTTP/1.1" 500 Internal Server Error
+
+
+Do this on the Square Explorer page:
+
+Fill only these fields
+
+At the top:
+click Select token
+choose your Sandbox Access Token
+- token = sandbox
+- idempotency_key = Generate
+- source_id = cnon:card-nonce-ok
+- amount = 1
+- currency = USD
+- autocomplete = true
+- buyer_email_address = your email
+Everything else empty.
+
+
+
+
+
+
+
+
+#### Step 2
 
 Create a payment link:
 > Items → Create Item → Ebook → $1
@@ -25,7 +47,7 @@ Then:
 > Online Checkout → Payment Links → Create
 Select the item.
 
-### Step 3
+#### Step 3
 
 Open the payment link and use the **Sandbox test card**:
 ```
@@ -35,7 +57,7 @@ CVV: 111
 ZIP: 12345
 ```
 
-### What happens:
+#### What happens:
 ```
 Payment created
       ↓
@@ -48,9 +70,8 @@ get_payment() fetches payment
 Email sent
 ```
 
----
 
-## Option 2 — Create Payment via API (Fastest for developers)
+### Option 2 — Create Payment via API (Fastest for developers)
 
 Instead of a checkout page, you directly create a payment.
 Use this **curl command** (Sandbox):
@@ -80,9 +101,9 @@ This immediately creates a payment.
 
 Webhook fires instantly.
 
----
 
-## Option 3 — Square API Explorer (No terminal)
+
+### Option 3 — Square API Explorer (No terminal)
 
 Go here:
 > [https://developer.squareup.com/explorer/square/payments-api/create-payment](https://developer.squareup.com/explorer/square/payments-api/create-payment)

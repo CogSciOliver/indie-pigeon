@@ -23,6 +23,7 @@ Estimated setup time: **10–25 minutes** **maybe days if you need to review doc
   - [Start The App](#start-the-app)
   - [Verify It: Try the Tunnel](#verify-it-try-the-tunnel)
 - [7. Test Square Webhook](#7-test-square-webhook)
+    - [This means](#this-means)
 - [8. Test Payment](#8-test-payment)
 - [9. Test Download Worker](#9-test-download-worker)
 - [10. Common Issues](#10-common-issues)
@@ -163,6 +164,17 @@ payment.updated
 ```
 
 Confirm backend receives request.
+
+You will get a `500 Internal Server Error`
+
+### This means
+> Cloudflare is fine
+> webhook signature is fine
+> FastAPI route is fine
+> the Square test event is not a real order fulfillment test
+
+**Move On to Make a Real Sandbox Payment**
+
 
 ---
 
