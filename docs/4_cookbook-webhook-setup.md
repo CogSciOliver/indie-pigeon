@@ -34,7 +34,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=you@gmail.com
 SMTP_PASS=your_app_password
-FROM_EMAIL=Unschool Discoveries <you@gmail.com>
+EMAIL_FROM=Unschool Discoveries <you@gmail.com>
 ```
 ---
 ```
@@ -142,6 +142,7 @@ ls ~/.cloudflared
 ---
 ## A3) Update Square webhook endpoint (one time)
 Square Developer Dashboard → your app → Webhooks (Sandbox)
+[Square Developer Dashboard Sandbox Config](https://developer.squareup.com/apps)
 
 Set endpoint URL to:
 
