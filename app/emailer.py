@@ -1,23 +1,27 @@
 import os
-import smtplib
-from email.message import EmailMessage
+import requests
 
 
 def send_ebook_email(to_email: str, subject: str, body: str) -> str:
-    msg = EmailMessage()
-    msg["From"] = os.environ["EMAIL_FROM"]
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.set_content(body)
+    api_key = os.environ["RESEND_API_KEY"]
+    email_from = os.environ["EMAIL_FROM"]
 
-    host = os.environ["SMTP_HOST"]
-    port = int(os.environ.get("SMTP_PORT", "587"))
-    user = os.environ["SMTP_USER"]
-    pw = os.environ["SMTP_PASS"]
+    r = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": email_from,
+            "to": [to_email],
+            "subject": subject,
+            "text": body,
+        },
+        timeout=10,
+    )
 
-    with smtplib.SMTP(host, port) as s:
-        s.starttls()
-        s.login(user, pw)
-        s.send_message(msg)
+    r.raise_for_status()
+    data = r.json()
 
-    return f"smtp:{host}"
+    return data.get("id", "resend")

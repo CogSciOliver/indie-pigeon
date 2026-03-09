@@ -121,6 +121,9 @@ async def square_webhook(request: Request):
         db.close()
 
     # Fulfill: email download link
+    # this is for one product below
+    # upgrade MVP to select products based on Square item/metadata 
+    #PRODUCT_MAP={"ebook-basic":"usd-ebook-one.pdf","ebook-bonus":"usd-ebook-bonus.pdf"}
     product_key = os.environ.get("PRODUCT_KEY", "usd-ebook-one.pdf")
     download_url = make_cf_download_url(product_key)
 
@@ -136,11 +139,16 @@ If you have any trouble, reply to this email.
 
     db = SessionLocal()
     try:
+        order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
+
+        # prevent duplicate fulfillment
+        if order and order.status == "fulfilled":
+            return {"ok": True, "duplicate_fulfillment": True}
+
         print("ABOUT TO SEND EMAIL")
         provider_id = send_ebook_email(buyer_email, subject, body)
         print("EMAIL SENT OK")
 
-        order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
         if order:
             order.status = "fulfilled"
             order.fulfilled_at = datetime.utcnow()
@@ -152,13 +160,14 @@ If you have any trouble, reply to this email.
                 )
             )
             db.commit()
+
     except Exception as e:
         print("EMAIL FAILED:", str(e))
         db.rollback()
 
-        order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
         if order:
             order.status = "failed"
+
             db.add(
                 DeliveryLog(
                     order_id=order.id,
