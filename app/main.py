@@ -96,7 +96,7 @@ async def square_webhook(request: Request):
         return {"ok": True, "ignored": True, "payment_status": status}
 
     customer = get_customer(payment["customer_id"])
-    buyer_email = customer["email_address"]
+    buyer_email = customer.get("email_address")
 
     print("GOT_CUSTOMER EMAIL===", buyer_email)
 
