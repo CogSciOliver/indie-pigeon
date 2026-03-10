@@ -3,9 +3,10 @@ import hmac
 import hashlib
 import time
 import urllib.parse
+from pathlib import Path
+
 from fastapi import APIRouter, Form, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
-from pathlib import Path
 
 from .emailer import send_ebook_email
 
@@ -28,10 +29,8 @@ def make_cf_download_url(key: str) -> str:
 def favicon():
     return FileResponse(Path(__file__).parent / "favicon.ico")
 
-router = APIRouter()
 
-
-@router.get("/", response_class=HTMLResponse)
+@router.get("/manual-send", response_class=HTMLResponse)
 def manual_send_form():
     return """
 <!doctype html>
@@ -52,6 +51,7 @@ input, button {
   padding: 12px;
   margin-top: 10px;
   font-size: 16px;
+  box-sizing: border-box;
 }
 button {
   cursor: pointer;
@@ -81,15 +81,18 @@ def manual_send(
     product_key: str = Form(...)
 ):
 
-    if password != os.environ["MANUAL_SEND_PASSWORD"]:
+    expected_password = os.environ.get("MANUAL_SEND_PASSWORD")
+    if not expected_password:
+        raise HTTPException(status_code=500, detail="MANUAL_SEND_PASSWORD not set")
+
+    if password != expected_password:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     download_url = make_cf_download_url(product_key)
 
     subject = "Your Unschool Discoveries ebook download"
 
-    body = f"""
-Thanks for your purchase!
+    body = f"""Thanks for your purchase!
 
 Download your ebook here:
 
@@ -108,7 +111,7 @@ If you have trouble accessing the file, reply to this email.
 <h2>Email sent</h2>
 <p>Sent to: <strong>{buyer_email}</strong></p>
 <p>Provider ID: {provider_id}</p>
-<p><a href="/">Send another</a></p>
+<p><a href="/manual-send">Send another</a></p>
 </body>
 </html>
 """

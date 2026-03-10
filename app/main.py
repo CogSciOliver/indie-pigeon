@@ -3,18 +3,19 @@ import hmac
 import hashlib
 import time
 import urllib.parse
+import uuid
 from datetime import datetime
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from requests.exceptions import HTTPError
 from sqlalchemy.exc import IntegrityError
 
 from .db import SessionLocal, init_db
 from .models import Order, DeliveryLog
-from .square_client import get_order, verify_square_signature, get_payment, get_customer
+from .square_client import verify_square_signature, get_payment
 from .emailer import send_ebook_email
 from .manual_send import router as manual_send_router
-
 
 
 def make_cf_download_url(key: str) -> str:
@@ -32,7 +33,6 @@ app = FastAPI()
 app.include_router(manual_send_router)
 
 
-
 @app.on_event("startup")
 def _startup():
     init_db()
@@ -41,6 +41,68 @@ def _startup():
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/", response_class=HTMLResponse)
+def checkout_start_form():
+    return """
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Get Your Book</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Get Your Book</h2>
+  <p>Enter your email, then continue to checkout.</p>
+
+  <form method="post" action="/start-order">
+    <input type="email" name="email" placeholder="you@example.com" required />
+    <button type="submit">Continue to Checkout</button>
+  </form>
+</body>
+</html>
+"""
+
+
+@app.post("/start-order")
+def start_order(email: str = Form(...)):
+    checkout_ref = str(uuid.uuid4())
+    db = SessionLocal()
+
+    try:
+        order = Order(
+            checkout_ref=checkout_ref,
+            square_payment_id=None,
+            buyer_email=email,
+            status="pending",
+        )
+        db.add(order)
+        db.commit()
+    finally:
+        db.close()
+
+    square_checkout_url = os.environ["SQUARE_CHECKOUT_URL"]
+    return RedirectResponse(square_checkout_url, status_code=303)
 
 
 @app.post("/square/webhook")
@@ -66,7 +128,6 @@ async def square_webhook(request: Request):
 
     print("EVENT TYPE:", event_type)
 
-    # Only fulfill on payment.updated
     if event_type != "payment.updated":
         return {"ok": True, "ignored": True, "event_type": event_type}
 
@@ -76,12 +137,9 @@ async def square_webhook(request: Request):
     if not payment_id or not event_id:
         raise HTTPException(status_code=400, detail="Missing event_id/payment_id")
 
-    # Confirm payment via Square API
     try:
         payment = get_payment(payment_id)
-
     except HTTPError:
-        # Square "Send Test Event" often uses a fake sample payment ID
         return {
             "ok": True,
             "ignored": True,
@@ -98,62 +156,42 @@ async def square_webhook(request: Request):
     if status != "COMPLETED":
         return {"ok": True, "ignored": True, "payment_status": status}
 
-    customer = get_customer(payment["customer_id"])
-    print("CUSTOMER JSON:", customer)
-
-    buyer_email = customer.get("email_address")
-    print("GOT_CUSTOMER EMAIL===", buyer_email)
-
-    order = get_order(payment["order_id"])
-    print("<<<<<<<<<<<<<<< ORDER OBJECT >>>>>>>>>>>>>")
-    print("ORDER JSON:", order)
-
+    db = SessionLocal()
+    order = None
     buyer_email = None
 
-    for fulfillment in order.get("fulfillments", []):
-        recipient = fulfillment.get("recipient") or {}
-        buyer_email = recipient.get("email_address")
-        if buyer_email:
-            break
-
-    print("GOT_ORDER EMAIL===", buyer_email)
-
-    if not buyer_email:
-        raise HTTPException(status_code=400, detail="No buyer email found on order")
-
-    if not buyer_email:
-        return {"ok": True, "ignored": True, "reason": "customer_missing_email"}
-
-    # Save order idempotently
-    db = SessionLocal()
     try:
-        order = Order(
-            square_event_id=event_id,
-            square_payment_id=payment_id,
-            buyer_email=buyer_email,
-            status="paid",
-        )
-        db.add(order)
-        db.commit()
-        db.refresh(order)
-    except IntegrityError:
-        db.rollback()
-        return {"ok": True, "duplicate": True}
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"DB error: {e}")
-    finally:
-        db.close()
+        existing = db.query(Order).filter(Order.square_payment_id == payment_id).first()
+        if existing:
+            if existing.status == "fulfilled":
+                return {"ok": True, "duplicate_fulfillment": True}
+            order = existing
+        else:
+            order = (
+                db.query(Order)
+                .filter(Order.status == "pending")
+                .order_by(Order.id.desc())
+                .first()
+            )
 
-    # Fulfill: email download link
-    # this is for one product below
-    # upgrade MVP to select products based on Square item/metadata 
-    #PRODUCT_MAP={"ebook-basic":"usd-ebook-one.pdf","ebook-bonus":"usd-ebook-bonus.pdf"}
-    product_key = os.environ.get("PRODUCT_KEY", "usd-ebook-one.pdf")
-    download_url = make_cf_download_url(product_key)
+            if not order:
+                raise HTTPException(status_code=400, detail="No pending order/email found")
 
-    subject = "Your Unschool Discoveries ebook download is here!"
-    body = f"""Thanks for your purchase!
+            order.square_payment_id = payment_id
+            order.status = "paid"
+            db.commit()
+
+        buyer_email = order.buyer_email
+        print("BUYER EMAIL:", buyer_email)
+
+        if not buyer_email:
+            raise HTTPException(status_code=400, detail="Stored order missing buyer email")
+
+        product_key = os.environ.get("PRODUCT_KEY", "usd-ebook-one.pdf")
+        download_url = make_cf_download_url(product_key)
+
+        subject = "Your Unschool Discoveries ebook download is here!"
+        body = f"""Thanks for your purchase!
 
 You can download your ebook using the link below:
 
@@ -162,37 +200,31 @@ You can download your ebook using the link below:
 If you have any trouble, reply to this email.
 """
 
-    db = SessionLocal()
-    try:
-        order = db.query(Order).filter(Order.square_payment_id == payment_id).first()
-
-        # prevent duplicate fulfillment
-        if order and order.status == "fulfilled":
-            return {"ok": True, "duplicate_fulfillment": True}
-
         print("ABOUT TO SEND EMAIL")
         provider_id = send_ebook_email(buyer_email, subject, body)
         print("EMAIL SENT OK")
 
-        if order:
-            order.status = "fulfilled"
-            order.fulfilled_at = datetime.utcnow()
-            db.add(
-                DeliveryLog(
-                    order_id=order.id,
-                    email_status="sent",
-                    provider_message_id=provider_id,
-                )
-            )
-            db.commit()
+        order.status = "fulfilled"
+        order.fulfilled_at = datetime.utcnow()
 
+        db.add(
+            DeliveryLog(
+                order_id=order.id,
+                email_status="sent",
+                provider_message_id=provider_id,
+            )
+        )
+        db.commit()
+
+    except IntegrityError:
+        db.rollback()
+        return {"ok": True, "duplicate": True}
     except Exception as e:
         print("EMAIL FAILED:", str(e))
         db.rollback()
 
-        if order:
+        if order and getattr(order, "id", None):
             order.status = "failed"
-
             db.add(
                 DeliveryLog(
                     order_id=order.id,
