@@ -86,7 +86,9 @@ async def square_webhook(request: Request):
 
     status = (payment.get("status") or "").upper()
     
-    print("PAYMENT JSON:", payment)
+    print("PAYMENT JSON:", customer)
+    print("=============================================")
+    print("CUSTOMER JSON:", customer)
     print("PAYMENT ID:", payment_id)
     print("PAYMENT STATUS:", status)
 
