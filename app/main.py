@@ -85,15 +85,21 @@ async def square_webhook(request: Request):
         }
 
     status = (payment.get("status") or "").upper()
-
+    
+    print("PAYMENT JSON:", payment)
     print("PAYMENT ID:", payment_id)
     print("PAYMENT STATUS:", status)
 
     if status != "COMPLETED":
         return {"ok": True, "ignored": True, "payment_status": status}
 
-    buyer_email = payment.get("buyer_email_address") or payment.get("receipt_email_address")
+    buyer_email = (
+        payment.get("buyer_email_address")
+        or payment.get("receipt_email_address")
+        or ((payment.get("customer_details") or {}).get("email_address"))
+    )
 
+    
     print("BUYER EMAIL:", buyer_email)
 
     if not buyer_email:
