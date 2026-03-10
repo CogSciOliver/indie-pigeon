@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .db import SessionLocal, init_db
 from .models import Order, DeliveryLog
-from .square_client import verify_square_signature, get_payment
+from .square_client import verify_square_signature, get_payment, get_customer
 from .emailer import send_ebook_email
 
 
@@ -93,14 +93,10 @@ async def square_webhook(request: Request):
     if status != "COMPLETED":
         return {"ok": True, "ignored": True, "payment_status": status}
 
-    buyer_email = (
-        payment.get("buyer_email_address")
-        or payment.get("receipt_email_address")
-        or ((payment.get("customer_details") or {}).get("email_address"))
-    )
+    customer = get_customer(payment["customer_id"])
+    buyer_email = customer["email_address"]
 
-    
-    print("BUYER EMAIL:", buyer_email)
+    print("GOT_CUSTOMER EMAIL===", buyer_email)
 
     if not buyer_email:
         raise HTTPException(status_code=400, detail="No buyer email on payment")

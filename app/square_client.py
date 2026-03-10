@@ -19,7 +19,19 @@ def verify_square_signature(signature_header: str, signature_key: str, notificat
 
 def get_payment(payment_id: str) -> dict:
     url = f"{square_base_url()}/v2/payments/{payment_id}"
-    headers = {"Authorization": f"Bearer {os.environ['SQUARE_ACCESS_TOKEN']}", "Content-Type": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {os.environ['SQUARE_ACCESS_TOKEN']}", 
+        "Content-Type": "application/json"}
     r = requests.get(url, headers=headers, timeout=20)
     r.raise_for_status()
     return r.json()["payment"]
+
+def get_customer(customer_id: str) -> dict:
+    url = f"{square_base_url()}/v2/customers/{customer_id}"
+    headers = {
+        "Authorization": f"Bearer {os.environ['SQUARE_ACCESS_TOKEN']}",
+        "Content-Type": "application/json",
+    }
+    r = requests.get(url, headers=headers, timeout=20)
+    r.raise_for_status()
+    return r.json()["customer"]
