@@ -1,11 +1,28 @@
 import os
+import hmac
+import hashlib
+import time
+import urllib.parse
 from fastapi import APIRouter, Form, HTTPException
-from fastapi.responses import HTMLResponse
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from pathlib import Path
 
-from .r2 import make_cf_download_url
 from .emailer import send_ebook_email
+
+
+router = APIRouter()
+
+
+def make_cf_download_url(key: str) -> str:
+    base = os.environ["DOWNLOAD_BASE_URL"].rstrip("/")
+    secret = os.environ["DOWNLOAD_SECRET"]
+    exp = int(time.time()) + int(os.environ.get("LINK_EXPIRES_SECONDS", "86400"))
+
+    msg = f"{key}.{exp}".encode("utf-8")
+    sig = hmac.new(secret.encode("utf-8"), msg, hashlib.sha256).hexdigest()
+
+    return f"{base}?key={urllib.parse.quote(key)}&exp={exp}&sig={sig}"
+
 
 @router.get("/favicon.ico")
 def favicon():
