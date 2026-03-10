@@ -13,6 +13,8 @@ from .db import SessionLocal, init_db
 from .models import Order, DeliveryLog
 from .square_client import get_order, verify_square_signature, get_payment, get_customer
 from .emailer import send_ebook_email
+from .manual_send import router as manual_send_router
+
 
 
 def make_cf_download_url(key: str) -> str:
@@ -27,6 +29,8 @@ def make_cf_download_url(key: str) -> str:
 
 
 app = FastAPI()
+app.include_router(manual_send_router)
+
 
 
 @app.on_event("startup")
