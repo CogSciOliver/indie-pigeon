@@ -26,6 +26,16 @@ def get_payment(payment_id: str) -> dict:
     r.raise_for_status()
     return r.json()["payment"]
 
+def get_order(order_id: str) -> dict:
+    url = f"{square_base_url()}/v2/orders/{order_id}"
+    headers = {
+        "Authorization": f"Bearer {os.environ['SQUARE_ACCESS_TOKEN']}",
+        "Content-Type": "application/json",
+    }
+    r = requests.get(url, headers=headers, timeout=20)
+    r.raise_for_status()
+    return r.json()["order"]
+
 def get_customer(customer_id: str) -> dict:
     url = f"{square_base_url()}/v2/customers/{customer_id}"
     headers = {
