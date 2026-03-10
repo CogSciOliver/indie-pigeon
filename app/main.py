@@ -75,6 +75,7 @@ async def square_webhook(request: Request):
     # Confirm payment via Square API
     try:
         payment = get_payment(payment_id)
+
     except HTTPError:
         # Square "Send Test Event" often uses a fake sample payment ID
         return {
@@ -85,10 +86,8 @@ async def square_webhook(request: Request):
         }
 
     status = (payment.get("status") or "").upper()
-    
-    print("PAYMENT JSON:", customer)
-    print("=============================================")
-    print("CUSTOMER JSON:", customer)
+
+    print("PAYMENT JSON:", payment)
     print("PAYMENT ID:", payment_id)
     print("PAYMENT STATUS:", status)
 
@@ -96,12 +95,14 @@ async def square_webhook(request: Request):
         return {"ok": True, "ignored": True, "payment_status": status}
 
     customer = get_customer(payment["customer_id"])
-    buyer_email = customer.get("email_address")
+    print("<<<<<<<<<<<<<<< CUSTOMER Object >>>>>>>>>>>>>")
+    print("CUSTOMER JSON:", customer)
 
+    buyer_email = customer.get("email_address")
     print("GOT_CUSTOMER EMAIL===", buyer_email)
 
     if not buyer_email:
-        raise HTTPException(status_code=400, detail="No buyer email on payment")
+        return {"ok": True, "ignored": True, "reason": "customer_missing_email"}
 
     # Save order idempotently
     db = SessionLocal()
