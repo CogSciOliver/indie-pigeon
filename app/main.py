@@ -50,7 +50,7 @@ def checkout_start_form():
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Get Your Book</title>
+  <title>v1.1.05_Staging: Get Your Book</title>
   <link rel="icon" href="/favicon.ico">
   <style>
     body {
@@ -88,10 +88,15 @@ def checkout_start_form():
         color: #fff;
         text-decoration: none;
     }   
+    .note {
+      color: #555;
+      font-size: 14px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-    <h1>Indie Pigeon</h1>
+    <h1>Staging Indie Pigeon</h1>
     <h2>Get Your Book</h2>
     <p>Enter your email, then continue to checkout.</p>
 
@@ -99,7 +104,8 @@ def checkout_start_form():
         <input type="email" name="email" placeholder="you@example.com" required />
         <button type="submit">Continue to Checkout</button>
     </form>
-<aside>v1.0.0</aside>
+
+    <p class="note">Your download will be delivered to this email after payment.</p>
 </body>
 </html>
 """
