@@ -67,18 +67,39 @@ def checkout_start_form():
       box-sizing: border-box;
     }
     button {
-      cursor: pointer;
+        background-image: linear-gradient(to right, #FF5500 0%, #F4D03F 51%, #16A085 100%);
+        cursor: pointer;
+        margin: 10px;
+        padding: 15px 45px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: 0.5s;
+        background-size: 200% auto;
+        color: white;
+        box-shadow: 0 0 20px #eee;
+        border-radius: 10px;
+        display: block;
+        outline: none;
+        border: none;
     }
+
+    button:hover {
+        background-position: right center;
+        color: #fff;
+        text-decoration: none;
+    }   
   </style>
 </head>
 <body>
-  <h2>Get Your Book</h2>
-  <p>Enter your email, then continue to checkout.</p>
+    <h1>Indie Pigeon</h1>
+    <h2>Get Your Book</h2>
+    <p>Enter your email, then continue to checkout.</p>
 
-  <form method="post" action="/start-order">
-    <input type="email" name="email" placeholder="you@example.com" required />
-    <button type="submit">Continue to Checkout</button>
-  </form>
+    <form method="post" action="/start-order">
+        <input type="email" name="email" placeholder="you@example.com" required />
+        <button type="submit">Continue to Checkout</button>
+    </form>
+<aside>v1.0.0</aside>
 </body>
 </html>
 """
