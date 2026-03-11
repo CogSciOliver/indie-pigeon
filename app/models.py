@@ -17,36 +17,17 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    # internal order reference used to match Square webhook events
-    order_ref: Mapped[str] = mapped_column(String(128), nullable=False)
-
-    # kept for backward compatibility with existing DBs
-    checkout_ref: Mapped[str | None] = mapped_column(String(128), nullable=True)
-
-    # Square identifiers
-    square_payment_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    square_order_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    checkout_link_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-
-    # product information
-    item_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    item_name: Mapped[str | None] = mapped_column(String(256), nullable=True)
-
-    # payment data
-    amount: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    currency: Mapped[str | None] = mapped_column(String(8), nullable=True)
-
-    # order state machine
-    status: Mapped[str] = mapped_column(
-        String(32),
-        default="pending_payment",
-    )
-
     # email data
     buyer_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
     delivery_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
 
     email_source: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
+     # order state machine
+    status: Mapped[str] = mapped_column(
+        String(32),
+        default="pending_payment",
+    )
 
     # timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -58,6 +39,25 @@ class Order(Base):
     )
 
     fulfilled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    # product information
+    item_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    item_name: Mapped[str | None] = mapped_column(String(256), nullable=True)
+
+    # internal order reference used to match Square webhook events
+    order_ref: Mapped[str] = mapped_column(String(128), nullable=False)
+
+    # kept for backward compatibility with existing DBs
+    checkout_ref: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+    # Square identifiers
+    square_payment_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    square_order_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    checkout_link_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+    # payment data
+    amount: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    currency: Mapped[str | None] = mapped_column(String(8), nullable=True)
 
 
 class DeliveryLog(Base):
