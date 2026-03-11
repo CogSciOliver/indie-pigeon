@@ -260,8 +260,26 @@ def checkout_start_form():
       box-sizing: border-box;
     }
     button {
-      cursor: pointer;
+        cursor: pointer;
+        margin: 10px;
+        padding: 15px 45px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: 0.5s;
+        background-size: 200% auto;
+        color: white;
+        box-shadow: 0 0 20px #eee;
+        border-radius: 10px;
+        display: block;
+        outline: none;
+        border: none;
     }
+
+    button:hover {
+        background-position: right center;
+        color: #fff;
+        text-decoration: none;
+    }   
     .note {
       color: #555;
       font-size: 14px;
