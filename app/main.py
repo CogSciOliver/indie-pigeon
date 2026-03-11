@@ -243,7 +243,7 @@ def checkout_start_form():
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Get Your Book</title>
+  <title>Staging: Get Your Book</title>
   <link rel="icon" href="/favicon.ico">
   <style>
     body {
@@ -270,15 +270,16 @@ def checkout_start_form():
   </style>
 </head>
 <body>
-  <h2>Get Your Book</h2>
-  <p>Enter your email, then continue to checkout.</p>
+    <h1>Staging Indie Pigeon</h1>
+    <h2>Get Your Book</h2>
+    <p>Enter your email, then continue to checkout.</p>
 
-  <form method="post" action="/start-order">
-    <input type="email" name="email" placeholder="you@example.com" required />
-    <button type="submit">Continue to Checkout</button>
-  </form>
+    <form method="post" action="/start-order">
+        <input type="email" name="email" placeholder="you@example.com" required />
+        <button type="submit">Continue to Checkout</button>
+    </form>
 
-  <p class="note">Your download will be delivered to this email after payment.</p>
+    <p class="note">Your download will be delivered to this email after payment.</p>
 </body>
 </html>
 """
