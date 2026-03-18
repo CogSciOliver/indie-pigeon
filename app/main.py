@@ -63,7 +63,7 @@ def checkout_start_form():
 <html>
 <head>
   <meta charset="utf-8">
-  <title>v1.0.Live: Get Your Book</title>
+  <title>v1.0.1 Live: Get Your Book</title>
   <link rel="icon" href="/favicon.ico">
   <style>
     body {
@@ -119,7 +119,7 @@ def checkout_start_form():
     </form>
 
     <p class="note">Your download will be delivered to this email after payment.</p>
-    <p>v1.0.0</p>
+    <p>v1.0.1</p>
 </body>
 </html>
 """
