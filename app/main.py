@@ -80,7 +80,7 @@ def checkout_start_form():
       box-sizing: border-box;
     }
     button {
-        background-image: linear-gradient(to right, #FFFF00 0%, #F4D03F 51%, #16A085 100%);
+        background-image: linear-gradient(to right, #16a085 0%, #F4D03F 51%, #16A085 100%);
         cursor: pointer;
         margin: 10px;
         padding: 15px 45px;
