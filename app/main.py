@@ -8,8 +8,11 @@ from datetime import datetime
 
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from requests.exceptions import HTTPError
 from sqlalchemy.exc import IntegrityError
+
 
 from .db import SessionLocal, init_db
 from .models import Order, DeliveryLog
@@ -30,8 +33,10 @@ def make_cf_download_url(key: str) -> str:
 
 
 app = FastAPI()
-app.include_router(manual_send_router)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
 
+app.include_router(manual_send_router)
 
 @app.on_event("startup")
 def _startup():
@@ -43,6 +48,14 @@ def health():
     return {"ok": True}
 
 
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {"request": request}
+    )
+
+
 @app.get("/", response_class=HTMLResponse)
 def checkout_start_form():
     return """
@@ -50,7 +63,7 @@ def checkout_start_form():
 <html>
 <head>
   <meta charset="utf-8">
-  <title>v1.0.0_Staging: Get Your Book</title>
+  <title>v1.0.Live: Get Your Book</title>
   <link rel="icon" href="/favicon.ico">
   <style>
     body {
@@ -96,7 +109,7 @@ def checkout_start_form():
   </style>
 </head>
 <body>
-    <h1>Staging Indie Pigeon</h1>
+    <h1>Live Indie Pigeon</h1>
     <h2>Get Your Book</h2>
     <p>Enter your email, then continue to checkout.</p>
 

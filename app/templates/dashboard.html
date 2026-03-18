@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Indie Pigeon Dashboard</title>
+    <title>v1.0.0_Staging: Get Your Book</title>
+    <link rel="icon" href="/favicon.ico">
+
+    <link href="/static/css/dashboard.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <header class="topnav">
+
+        <div class="logo">
+            <img src="/static/img/logo.png" alt="Indie Pigeon">
+            Indie Pigeon
+
+        </div>
+
+        <div class="status">
+
+            ● System Online
+
+        </div>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <aside class="sidebar">
+
+            <a class="active">Dashboard</a>
+
+            <h3>Orders</h3>
+
+            <a href="/order/start">Start Order</a>
+            <a href="/orders">Order History</a>
+
+            <h3>Delivery</h3>
+
+            <a href="/send/manual">Manual Send</a>
+            <a href="/delivery/logs">Delivery Logs</a>
+
+            <h3>Files</h3>
+
+            <a href="/files">File Library</a>
+
+            <h3>System</h3>
+
+            <a href="/settings">Settings</a>
+
+        </aside>
+
+
+        <main class="main">
+
+
+            <div class="grid">
+
+                <div class="card">
+
+                    <h2>Start a New Order</h2>
+
+                    <p>Create a new delivery linked to a Square purchase.</p>
+
+                    <br>
+
+                    <a class="btn btn-order" href="/order/start">
+
+                        Start Order
+
+                    </a>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>Manual Send</h2>
+
+                    <p>Send a file manually to a customer email.</p>
+
+                    <br>
+
+                    <a class="btn btn-send" href="/manual-send">
+
+                        Manual Send
+
+                    </a>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>Recent Activity</h2>
+
+                    <ul class="activity">
+
+                        <li>Order #441 delivered</li>
+                        <li>Manual send to customer@email.com</li>
+                        <li>Square webhook received</li>
+                        <li>Order #438 delivered</li>
+
+                    </ul>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>System Health</h2>
+
+                    <p>Webhook: Active</p>
+                    <p>Email Service: Connected</p>
+                    <p>Storage: Cloudflare R2</p>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

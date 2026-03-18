@@ -1,9 +1,4 @@
-# Python virtual env
-venv/
-.venv/
-
-# Python cache
-app/__pycache__/
+# Python bytecode / cache
 __pycache__/
 *.py[cod]
 
@@ -15,27 +10,12 @@ env/
 # Environment variables
 .env
 
-# macOS
-.DS_Store
-
-# VS Code
+# Editor / OS files
 .vscode/
+.DS_Store
 
 # Logs
 *.log
 
-# Python cache
-__pycache__/
-*.pyc
-
-# dotenv secrets
-.env
-
-# macOS
-.DS_Store
-
-# logs
-*.log
-
-#dev tools
+# Project-local dev tools
 _private/
